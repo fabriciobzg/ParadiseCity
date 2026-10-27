@@ -8,6 +8,7 @@ Um app simples e bonito para montar sua rotina, marcar as tarefas do dia e acomp
 - **Dias da semana**: cada tarefa pode repetir todo dia, só nos dias úteis, só no fim de semana etc.
 - **Progresso**: anel de progresso do dia, sequência de dias 🔥, melhor sequência, taxa dos últimos 30 dias e calendário das últimas 5 semanas.
 - **Corrigir dias anteriores**: esqueceu de marcar ontem? Toque no dia no calendário.
+- **Adicionar por voz**: toque no microfone 🎤 ao lado do nome da tarefa e fale.
 - **Modelos prontos**: Manhã produtiva, Saúde em dia, Noite tranquila, Estudos e trabalho.
 - **Compartilhar**: convide amigos com o link do app ou envie sua rotina para eles copiarem com um toque.
 - **Instalável e offline**: funciona como app no celular (PWA), até sem internet.

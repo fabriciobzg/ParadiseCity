@@ -457,6 +457,26 @@ input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .task-form { display: grid; gap: 16px; }
 .title-row { display: flex; gap: 8px; }
 .emoji-input { width: 56px; flex: none; padding: 0; text-align: center; font-size: 1.4rem; }
+.title-wrap { position: relative; flex: 1; min-width: 0; }
+.title-wrap.has-mic .title-input { padding-right: 50px; }
+.mic-btn {
+  position: absolute;
+  top: 50%; right: 6px;
+  transform: translateY(-50%);
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+  transition: background 0.2s, color 0.2s;
+}
+.mic-btn:hover { background: var(--accent-soft); }
+.mic-btn svg { width: 20px; height: 20px; }
+.mic-btn.listening { background: var(--danger); color: #fff; animation: mic-pulse 1.2s ease-out infinite; }
+@keyframes mic-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 55%, transparent); }
+  100% { box-shadow: 0 0 0 12px transparent; }
+}
 .emoji-row { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-top: -6px; }
 .emoji-row::-webkit-scrollbar { display: none; }
 .emoji-pick {

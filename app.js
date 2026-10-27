@@ -5,7 +5,7 @@
    Tudo fica salvo no próprio aparelho (localStorage).
    =========================================================== */
 
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 const STORAGE_KEY = 'ritmo:data';
 const MAX_TITLE = 60;
 const MAX_SHARED_TASKS = 50;
@@ -726,6 +726,75 @@ function openModal(html, opts = {}) {
   if (!$modal.open) $modal.showModal();
 }
 
+/* ---------- Ditado por voz ---------- */
+
+const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
+const MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+let recognition = null;
+
+function stopDictation() {
+  if (recognition) recognition.abort();
+  recognition = null;
+}
+
+function toggleDictation(input, button) {
+  if (recognition) {
+    recognition.stop();
+    return;
+  }
+
+  const rec = new SpeechRecognitionApi();
+  rec.lang = 'pt-BR';
+  rec.interimResults = true;
+  rec.continuous = false;
+  rec.maxAlternatives = 1;
+  recognition = rec;
+
+  const before = input.value;
+  const setListening = on => {
+    button.classList.toggle('listening', on);
+    button.setAttribute('aria-pressed', String(on));
+    button.setAttribute('aria-label', on ? 'Parar de ouvir' : 'Falar o nome da tarefa');
+    input.placeholder = on ? 'Ouvindo… pode falar' : 'Digite ou fale 🎤';
+  };
+
+  rec.onstart = () => {
+    setListening(true);
+    if (navigator.vibrate) navigator.vibrate(10);
+  };
+  rec.onresult = e => {
+    const text = Array.from(e.results, r => r[0].transcript).join(' ').trim();
+    if (!text) return;
+    // Primeira letra maiúscula e sem ponto final
+    const spoken = (text.charAt(0).toUpperCase() + text.slice(1)).replace(/[.!]+$/, '');
+    input.value = (before ? `${before} ${spoken}` : spoken).slice(0, MAX_TITLE);
+  };
+  rec.onerror = e => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      toast('Permita o uso do microfone para adicionar por voz.');
+    } else if (e.error === 'no-speech') {
+      toast('Não ouvi nada. Toque no microfone e fale de novo.');
+    } else if (e.error === 'network') {
+      toast('O ditado por voz precisa de internet.');
+    } else if (e.error !== 'aborted') {
+      toast('Não foi possível usar o microfone agora.');
+    }
+  };
+  rec.onend = () => {
+    if (recognition === rec) recognition = null;
+    if (!button.isConnected) return;
+    setListening(false);
+    document.getElementById('form-error').textContent = '';
+  };
+
+  try {
+    rec.start();
+  } catch {
+    recognition = null;
+    toast('Não foi possível usar o microfone agora.');
+  }
+}
+
 function closeModal() {
   if ($modal.open) $modal.close();
 }
@@ -743,7 +812,10 @@ function openTaskModal(task) {
 
       <div class="title-row">
         <input name="emoji" class="emoji-input" value="${esc(t.emoji)}" aria-label="Emoji" maxlength="16">
-        <input name="title" class="title-input" value="${esc(t.title)}" placeholder="Ex.: Beber água" maxlength="${MAX_TITLE}" required aria-label="Nome da tarefa" autocomplete="off">
+        <div class="title-wrap${SpeechRecognitionApi ? ' has-mic' : ''}">
+          <input name="title" class="title-input" value="${esc(t.title)}" placeholder="${SpeechRecognitionApi ? 'Digite ou fale 🎤' : 'Ex.: Beber água'}" maxlength="${MAX_TITLE}" required aria-label="Nome da tarefa" autocomplete="off">
+          ${SpeechRecognitionApi ? `<button type="button" class="mic-btn" id="mic-btn" aria-label="Falar o nome da tarefa" aria-pressed="false">${MIC_SVG}</button>` : ''}
+        </div>
       </div>
       <div class="emoji-row" role="group" aria-label="Sugestões de emoji">
         ${QUICK_EMOJIS.map(e => `<button type="button" class="emoji-pick" data-emoji="${e}">${e}</button>`).join('')}
@@ -782,6 +854,9 @@ function openTaskModal(task) {
   const form = document.getElementById('task-form');
   const titleInput = form.elements.title;
   if (!task) setTimeout(() => titleInput.focus(), 50);
+
+  const micBtn = document.getElementById('mic-btn');
+  if (micBtn) micBtn.addEventListener('click', () => toggleDictation(titleInput, micBtn));
 
   form.querySelectorAll('.emoji-pick').forEach(btn => {
     btn.addEventListener('click', () => { form.elements.emoji.value = btn.dataset.emoji; });
@@ -938,6 +1013,7 @@ $modal.addEventListener('click', e => {
   if (e.target === $modal) closeModal();
 });
 $modal.addEventListener('close', () => {
+  stopDictation();
   $modal.innerHTML = '';
   delete $modal.dataset.day;
 });
