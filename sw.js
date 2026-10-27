@@ -1,6 +1,6 @@
 // Service worker: deixa o Ritmo funcionando offline.
 // Ao publicar uma nova versão, aumente o número do CACHE.
-const CACHE = 'ritmo-v2';
+const CACHE = 'ritmo-v3';
 const ASSETS = [
   './',
   './index.html',
