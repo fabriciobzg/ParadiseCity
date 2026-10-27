@@ -1,16 +1,51 @@
-<!--
-Lista de Dicas Git
-Comandos essenciais:
-  - git init: Cria um repositório
-  - git clone <url>: Baixa um repo existente
-  - git status: Mostra o que mudou
-  - git add .: Prepara as alterações
-  - git commit -m "...": Salva uma versão
-  - git log: Histórico de commits
-  - git branch: Lista as ramificações
-  - git push: Envia para o remoto
-  - git pull: Traz do remoto
-  - git remote -v: Mostra os remotos
--->
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ritmo — Checklist diário</title>
+  <meta name="description" content="Ritmo: seu checklist diário para criar hábitos e organizar a rotina.">
+  <meta name="theme-color" content="#6d5dfc">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Ritmo">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta property="og:title" content="Ritmo — Checklist diário">
+  <meta property="og:description" content="Crie sua rotina, marque suas tarefas e acompanhe sua sequência de dias.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <main id="view" class="view" tabindex="-1"></main>
+  </div>
 
-<h1>ParadiseCity</h1>
+  <button id="fab" class="fab" data-action="add" aria-label="Adicionar tarefa">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+
+  <nav class="tabbar" aria-label="Navegação principal">
+    <button class="tab" data-tab="hoje" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>
+      <span>Hoje</span>
+    </button>
+    <button class="tab" data-tab="historico">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>
+      <span>Progresso</span>
+    </button>
+    <button class="tab" data-tab="ajustes">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      <span>Ajustes</span>
+    </button>
+  </nav>
+
+  <dialog id="modal" class="modal"></dialog>
+  <input id="import-file" type="file" accept="application/json,.json" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
